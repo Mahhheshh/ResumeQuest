@@ -1,4 +1,7 @@
 {
+  "compilerOptions": {
+    "types": ["pdfjs-dist"],
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

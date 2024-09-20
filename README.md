@@ -21,6 +21,32 @@ ResumeQuest analyzes the content of a resume and generates relevant interview qu
 
 ## Installation
 
+## Installing via Docker
+
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/Mahhheshh/ResumeQuest.git
+    ```
+2. Navigate to the project directory:
+    ```sh
+    cd ResumeQuest
+    ```
+3. Copy the example environment file to `.env`:
+    ```sh
+    cp backend/.env.example backend/.env
+    ```
+4. Update the `GEMINI_API_KEY` in the `.env` file.
+5. Build the Docker image:
+    ```sh
+    docker build -t resumequest:0.0.1 .
+    ```
+6. Run the Docker container:
+    ```sh
+    docker run -p 5000:5000 --env-file backend/.env --rm resumequest:0.0.1
+    ```
+
+### Manual Installation
+
 To install ResumeQuest, follow these steps:
 
 1. Clone the repository:

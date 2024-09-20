@@ -1,16 +1,22 @@
 import os
+from typing import Any
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, send_from_directory, request, redirect
 import google.generativeai as genai
 
 load_dotenv()
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
-app = Flask(__name__)
+class Config:
+    API_KEY = os.environ.get("GEMINI_API_KEY")
+    ENVIRONMENT = os.environ.get("ENVIRONMENT", "DEV")
+    API_PREFIX = "api/" if ENVIRONMENT == "PROD" else ""
+    HOST = "0.0.0.0" if ENVIRONMENT == "PROD" else None
+
+genai.configure(api_key=Config.API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-initial_history = [
+INITIAL_HISTORY = [
     {
         "role": "user",
         "parts": "I am interviewing a candidate and would like help generating interview questions based on their resume. Here's their resume:",
@@ -21,11 +27,23 @@ initial_history = [
     }
 ]
 
+app = Flask(__name__)
+
+if Config.ENVIRONMENT == "PROD":
+    app = Flask(__name__, static_url_path="", static_folder="static")
+
 @app.route("/", methods=["GET"])
-def root():
+def index() -> Any:
+    if Config.ENVIRONMENT == "PROD":
+        return send_from_directory(app.static_folder, "index.html")
+
+    return redirect("/routes")
+
+@app.route(f"/{Config.API_PREFIX}routes", methods=["GET"])
+def root() -> Any:
     return jsonify({
         "routes": {
-            "generate": {
+            "/api/generate": {
                 "methods": ["POST"],
                 "form_data": {
                     "resume": "string"
@@ -34,24 +52,21 @@ def root():
         }
     }), 200
 
-@app.route("/generate", methods=["POST"])
-def generate():
-    resume = request.form.get("resume", None)
-    if resume is None:
+@app.route(f"/{Config.API_PREFIX}generate", methods=["POST"])
+def generate() -> Any:
+    resume = request.form.get("resume")
+    if not resume:
         return jsonify({"error": "provide resume"}), 400
 
-    history = [
-        *initial_history,
-        *[
-            {
-                "role": "user",
-                "parts": resume,
-            },
-            {
-                "role": "model",
-                "parts": "Thank you for providing the resume. I’ll now generate a set of interview questions tailored to the candidate's skills and experience."
-            }    
-        ]
+    history = INITIAL_HISTORY + [
+        {
+            "role": "user",
+            "parts": resume,
+        },
+        {
+            "role": "model",
+            "parts": "Thank you for providing the resume. I’ll now generate a set of interview questions tailored to the candidate's skills and experience."
+        }
     ]
 
     try:
@@ -66,15 +81,18 @@ def generate():
                 "type": "mcq_questions",
                 "description": mcq_msg.text
             },
-            {   "type": "short_answer_questions", 
-                "description":short_answer_msg.text
+            {
+                "type": "short_answer_questions",
+                "description": short_answer_msg.text
             },
-            {   "type":"coding_questions", 
-                "description":coding_msg.text
+            {
+                "type": "coding_questions",
+                "description": coding_msg.text
             }
         ])
     except Exception as e:
+        app.logger.error(f"Error generating questions: {e}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host=Config.HOST)

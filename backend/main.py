@@ -12,7 +12,8 @@ class Config:
     ENVIRONMENT = os.environ.get("ENVIRONMENT", "DEV")
     API_PREFIX = "api/" if ENVIRONMENT == "PROD" else ""
     HOST = "0.0.0.0" if ENVIRONMENT == "PROD" else None
-
+    PORT = "10000" if ENVIRONMENT == "PROD" else None # for render io
+    
 genai.configure(api_key=Config.API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
 
@@ -95,4 +96,4 @@ def generate() -> Any:
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host=Config.HOST)
+    app.run(host=Config.HOST, port=Config.PORT)

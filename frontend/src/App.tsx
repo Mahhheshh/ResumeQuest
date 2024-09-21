@@ -40,7 +40,7 @@ async function generatePage({
   font,
   fontSize,
 }: GeneratePageParams): Promise<void> {
-  yPosition -= fontSize * 2;
+  yPosition -= fontSize;
   const lines = textContent.split("\n");
   let page = currPage;
   for (const line of lines) {
@@ -48,37 +48,41 @@ async function generatePage({
       page = basePdf.addPage();
       yPosition = height - fontSize * 2;
     }
-
     const maxLineWidth = width - 100;
-    let currentLine = line;
-    while (currentLine.length > 0) {
-      let splitIndex = currentLine.length;
-      while (
-        splitIndex > 0 &&
-        font.widthOfTextAtSize(
-          currentLine.substring(0, splitIndex),
-          fontSize - 2
-        ) > maxLineWidth
-      ) {
-        splitIndex--;
+    const words = line.split(" ");
+    let currentLine = "";
+    for (const word of words) {
+      const testLine = currentLine + (currentLine ? " " : "") + word;
+      const testLineWidth = font.widthOfTextAtSize(testLine, fontSize - 2);
+
+      if (testLineWidth <= maxLineWidth) {
+        currentLine = testLine;
+      } else {
+        page.drawText(currentLine, {
+          x: 50,
+          y: yPosition,
+          size: fontSize - 2,
+        });
+        yPosition -= fontSize;
+
+        if (yPosition < fontSize * 2) {
+          page = basePdf.addPage();
+          yPosition = height - fontSize * 2;
+        }
+        currentLine = word;
       }
-      const textToDraw = currentLine.substring(0, splitIndex);
-      page.drawText(textToDraw, {
+    }
+    if (currentLine) {
+      page.drawText(currentLine, {
         x: 50,
         y: yPosition,
         size: fontSize - 2,
       });
-      currentLine = currentLine.substring(splitIndex);
-      yPosition -= fontSize * 1.5;
-      if (yPosition < fontSize * 2) {
-        page = basePdf.addPage();
-        yPosition = height - fontSize * 2;
-      }
+      yPosition -= fontSize;
     }
-
-    yPosition -= fontSize * 1.5;
+    yPosition -= fontSize;
   }
-  yPosition -= fontSize * 1.5;
+  yPosition -= fontSize;
 }
 
 const App = () => {
@@ -173,7 +177,7 @@ const App = () => {
     await generatePage({
       basePdf: pdfDoc,
       currPage: page,
-      textContent: questions.map((q) => q.description).join("\n"),
+      textContent: questions.map((q) => q.description).join(""),
       width,
       height,
       yPosition,

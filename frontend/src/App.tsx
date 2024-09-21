@@ -199,47 +199,46 @@ const App = () => {
   };
 
   return (
-    <div className="app-container min-h-screen bg-gray-100 flex flex-col items-center py-10">
-      <h1 className="text-4xl font-bold text-blue-600 mb-8">
+    <div className="app-container min-h-screen bg-gradient-to-r from-blue-100 to-blue-300 flex flex-col items-center py-10">
+      <h1 className="text-5xl font-extrabold text-blue-800 mb-8 drop-shadow-lg">
         Resume Question Generator
       </h1>
       <div className="file-upload mb-6">
         <input
           type="file"
           onChange={handleFileUpload}
-          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100"
+          disabled={loading}
+          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 transition duration-300"
         />
       </div>
       {questions && (
         <div className="download-button mb-6">
           <button
             onClick={() => saveQuestionsAsPdf(questions)}
-            className="bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+            className="bg-blue-600 text-white py-2 px-6 rounded-full shadow-lg hover:bg-blue-700 transition duration-300"
           >
             Download Generated PDF
           </button>
         </div>
       )}
-      {error && <p className="text-red-600">{error}</p>}
-      <div className="flex flex-col md:flex-row gap-4 w-full max-w-screen-xl">
+      {error && <p className="text-red-600 font-semibold">{error}</p>}
+      <div className="flex flex-col md:flex-row gap-8 w-full max-w-screen-xl">
         {text && (
-          <div className="pdf-text bg-white p-6 rounded-lg shadow-lg w-full md:w-1/2 mb-6 md:mb-0">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+          <div className="pdf-text bg-white p-8 rounded-lg shadow-xl w-full md:w-1/2 mb-6 md:mb-0">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
               Extracted Text
             </h2>
             <p className="text-gray-700 whitespace-pre-wrap">{text}</p>
           </div>
         )}
         {loading ? (
-          <div className="loading bg-white p-6 rounded-lg shadow-lg w-full md:w-1/2">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Loading...
-            </h2>
+          <div className="loading bg-white p-8 rounded-lg shadow-xl w-full min-h-full md:w-1/2 flex justify-center items-center">
+            <div className="loader border-t-4 border-blue-600 rounded-full w-12 h-12 animate-spin mx-auto"></div>
           </div>
         ) : (
           questions && (
-            <div className="questions bg-white p-6 rounded-lg shadow-lg w-full md:w-1/2">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            <div className="questions bg-white p-8 rounded-lg shadow-xl w-full md:w-1/2">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">
                 Generated Questions
               </h2>
               <ul className="list-disc list-inside">

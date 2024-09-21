@@ -20,7 +20,14 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 INITIAL_HISTORY = [
     {
         "role": "user",
-        "parts": "I am interviewing a candidate and would like help generating interview questions based on their resume. Here's their resume:",
+        "parts": "I need to interview a candidate and want help generating interview questions based exclusively on their resume.  \
+            1. The questions should be based strictly on the candidate\"s resume, focusing on their skills, experience, education, and qualifications. Avoid speculative or unrelated questions. \
+            2. Refer to the candidate directly in the questions. Do not refer to the interviewer or include phrases like 'as the interviewer' or 'you might ask.' Only refer to the candidate with 'you' or 'your' to make the questions feel personal. \
+            3. Do not add any extra information, context, commentary, or explanations outside of the questions.  \
+            4. Ensure the questions are directly relevant to the role or job description, keeping them concise and to the point. \
+            5. Questions should address specific items on the resume, such as projects, job roles, technologies, certifications, and achievements. Do not generalize. \
+            6. The tone should be neutral and professional, avoiding informal or conversational language. \
+            7. Output only the questions in a numbered list format with no additional buzz or filler text. "
     },
     {
         "role": "model",
@@ -80,15 +87,15 @@ def generate() -> Any:
         return jsonify([
             {
                 "type": "mcq_questions",
-                "description": mcq_msg.text
+                "description": mcq_msg.text.replace("*", "").replace("`", "'")
             },
             {
                 "type": "short_answer_questions",
-                "description": short_answer_msg.text
+                "description": short_answer_msg.text.replace("*", "").replace("`", "'")
             },
             {
                 "type": "coding_questions",
-                "description": coding_msg.text
+                "description": coding_msg.text.replace("*", "").replace("`", "'")
             }
         ])
     except Exception as e:

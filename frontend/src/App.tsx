@@ -150,8 +150,10 @@ const App = () => {
 
         const data = await response.json();
         setQuestions(data);
-      } catch (err) {
-        setError(err as string);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        setError(err.message || "An error occurred");
+        setQuestions(null); // Clear questions on error
       } finally {
         setLoading(false);
       }

@@ -27,7 +27,10 @@ INITIAL_HISTORY = [
             4. Ensure the questions are directly relevant to the role or job description, keeping them concise and to the point. \
             5. Questions should address specific items on the resume, such as projects, job roles, technologies, certifications, and achievements. Do not generalize. \
             6. The tone should be neutral and professional, avoiding informal or conversational language. \
-            7. Output only the questions in a numbered list format with no additional buzz or filler text. "
+            7. Output only the questions in a numbered list format with no additional buzz or filler text. \
+            8. You also have to generate answer for questions You are generating, In this format Answer: [Your answer goes here] \
+            9. For short-answer questions, provide relevent keywords \
+            9. For coding questions do not write code, insted write sudo algorithm."
     },
     {
         "role": "model",
@@ -66,7 +69,7 @@ def generate() -> Any:
     if not resume:
         return jsonify({"error": "provide resume"}), 400
 
-    history = INITIAL_HISTORY + [
+    history = [*INITIAL_HISTORY,
         {
             "role": "user",
             "parts": resume,

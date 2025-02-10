@@ -50,35 +50,35 @@ ResumeQuest analyzes the content of a resume and generates relevant interview qu
 To install ResumeQuest, follow these steps:
 
 1. Clone the repository:
-    ```sh
+    ```bash
     git clone https://github.com/Mahhheshh/ResumeQuest.git
     ```
 2. Navigate to the project directory:
-    ```sh
+    ```bash
     cd ResumeQuest
     ```
 3. Install the frontend dependencies:
-    ```sh
+    ```bash
     cd frontend && npm install
     ```
 4. Start the frontend:
-    ```sh
+    ```bash
     npm run dev
     ```
 5. Open another terminal and install the backend dependencies:
-    ```sh
+    ```bash
     # macos/linux
     cd backend && pip3 install -r requirements.txt
     # windows
     cd backend && pip install -r requirements.txt
     ```
 6. Copy the example environment file to `.env`:
-    ```sh
+    ```bash
     cp .env.example .env
     ```
 7. Update the `GEMINI_API_KEY` in the `.env` file.
 8. Run the backend:
-    ```sh
+    ```bash
     # Working directory is /backend
     # macOS/Linux
     python3 main.py
